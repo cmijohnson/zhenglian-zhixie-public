@@ -63,4 +63,5 @@ docker compose up -d --build
 
 - 维护：智链细米团队，按版本迭代（见 `CHANGELOG.md`）；
 - 反馈：通过仓库 Issue 提交问题与复现步骤；
+- 贡献者：见 [CONTRIBUTORS.md](CONTRIBUTORS.md)（JulyOS、JinweiOS 等）；
 - 安全问题：请勿公开提交敏感信息，先通过 Issue 说明影响范围。
