@@ -3,7 +3,7 @@
 > 适用版本：QwenPaw 1.1.12  
 > 英格客户云：`http://127.0.0.1:8080/`  
 > QwenPaw：`http://127.0.0.1:8088/`  
-> MCP 服务地址：`http://101.43.22.42:38080/mcp`
+> MCP 服务地址：`http://127.0.0.1:38080/mcp`
 
 ## 1. 连接后可以做什么
 
@@ -57,7 +57,7 @@ MCP 不会扩大员工权限。客户可见范围、团队范围、角色权限�
       "name": "英格客户云",
       "description": "以当前员工身份访问英格客户云业务功能",
       "transport": "streamable_http",
-      "url": "http://101.43.22.42:38080/mcp",
+      "url": "http://127.0.0.1:38080/mcp",
       "headers": {
         "Authorization": "Bearer <系统生成的个人令牌>"
       }
@@ -93,7 +93,7 @@ MCP 不会扩大员工权限。客户可见范围、团队范围、角色权限�
 | 名称 | `英格客户云` |
 | 类型 | `Remote` |
 | Transport | `streamable_http` |
-| URL | `http://101.43.22.42:38080/mcp` |
+| URL | `http://127.0.0.1:38080/mcp` |
 | Header 名称 | `Authorization` |
 | Header 内容 | `Bearer <系统生成的个人令牌>` |
 | 状态 | 启用 |

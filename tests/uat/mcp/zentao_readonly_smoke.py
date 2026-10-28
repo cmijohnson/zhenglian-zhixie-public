@@ -102,7 +102,7 @@ def main() -> None:
     assert status == 200
     browser_cookie = cookies(headers, browser_cookie)
 
-    callback = "http://101.43.22.42:37642/index.php?m=yinggecloud&f=oauthCallback"
+    callback = "http://127.0.0.1:37642/index.php?m=yinggecloud&f=oauthCallback"
     client_name = "英格科技项目平台（禅道只读）-UAT"
     status, _, registered = json_request(opener, args.base + "/oauth2/register", "POST", payload={
         "client_name": client_name,

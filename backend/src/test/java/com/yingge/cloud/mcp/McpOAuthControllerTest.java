@@ -25,7 +25,7 @@ class McpOAuthControllerTest {
                 .thenReturn(requestId);
         McpProperties properties = new McpProperties(
                 true,
-                "http://101.43.22.42:38080/",
+                "http://127.0.0.1:38080/",
                 null,
                 null,
                 null,
@@ -41,9 +41,9 @@ class McpOAuthControllerTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         controller.authorize("code", "client", "http://127.0.0.1/callback", "yingge.read", "state",
-                "challenge", "S256", "http://101.43.22.42:38080/mcp", response);
+                "challenge", "S256", "http://127.0.0.1:38080/mcp", response);
 
         assertThat(response.getRedirectedUrl()).isEqualTo(
-                "http://101.43.22.42:38080/oauth/authorize?request=" + requestId);
+                "http://127.0.0.1:38080/oauth/authorize?request=" + requestId);
     }
 }

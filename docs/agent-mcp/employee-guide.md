@@ -4,7 +4,7 @@
 
 英格客户云 MCP 允许员工在支持 MCP 2025-11-25、Streamable HTTP 和 OAuth 2.1 的 Agent 中查询、创建和更新本人有权访问的业务数据。
 
-- 正式 MCP 地址：`http://101.43.22.42:38080/mcp`
+- 正式 MCP 地址：`http://127.0.0.1:38080/mcp`
 - 授权方式：OAuth 2.1 Authorization Code + PKCE S256
 - 身份原则：Agent 始终以当前员工身份执行，不能选择或伪造组织
 - 会话：空闲 30 分钟过期；同一授权最多 5 个并发 MCP 会话
@@ -14,7 +14,7 @@
 ## 2. 首次连接
 
 1. 在 Agent 的 MCP 服务器设置中选择“Streamable HTTP / 远程 MCP”。
-2. 填入 `http://101.43.22.42:38080/mcp`，不需要手工填写 Access Token。
+2. 填入 `http://127.0.0.1:38080/mcp`，不需要手工填写 Access Token。
 3. Agent 会自动读取 OAuth 元数据并打开英格客户云登录页。
 4. 登录后核对客户端名称、精确回调地址和申请的 Scope，再点击“同意授权”。
 5. 返回 Agent 完成连接，通过“我的 Agent”页检查客户端、Scope、最近使用和到期时间。

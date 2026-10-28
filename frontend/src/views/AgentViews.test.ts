@@ -23,7 +23,7 @@ describe('Agent authorization views', () => {
     })
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ resource: 'https://101.43.22.42/mcp' }),
+      json: () => Promise.resolve({ resource: 'https://127.0.0.1/mcp' }),
     }))
   })
 
@@ -44,7 +44,7 @@ describe('Agent authorization views', () => {
     const wrapper = mount(MyAgentView, { global: { stubs: { RouterLink: RouterLinkStub } } })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('https://101.43.22.42/mcp')
+    expect(wrapper.text()).toContain('https://127.0.0.1/mcp')
     expect(wrapper.text()).toContain('员工 Agent')
     expect(wrapper.text()).toContain('yingge.read')
     expect(wrapper.text()).toContain('yingge_customer_archive')
@@ -74,7 +74,7 @@ describe('Agent authorization views', () => {
       if (path === '/api/v1/agent/approvals') return Promise.resolve([])
       if (path === '/api/v1/agent/personal-token' && init?.method === 'POST') return Promise.resolve({
         grantId: 'grant-personal', clientId: 'yingge_qwenpaw_personal', accessToken: 'one-time-token',
-        scopes: ['yingge.read', 'yingge.write'], resource: 'http://101.43.22.42:38080/mcp',
+        scopes: ['yingge.read', 'yingge.write'], resource: 'http://127.0.0.1:38080/mcp',
         expiresAt: '2026-08-21T00:00:00Z',
       })
       return Promise.reject(new Error(`unexpected ${path}`))
@@ -89,7 +89,7 @@ describe('Agent authorization views', () => {
 
     expect(apiMock).toHaveBeenCalledWith('/api/v1/agent/personal-token', { method: 'POST' })
     const config = JSON.parse((wrapper.get('textarea[aria-label="问候 MCP JSON 配置"]').element as HTMLTextAreaElement).value)
-    expect(config.mcpServers.yingge_mcp_personal.url).toBe('http://101.43.22.42:38080/mcp')
+    expect(config.mcpServers.yingge_mcp_personal.url).toBe('http://127.0.0.1:38080/mcp')
     expect(config.mcpServers.yingge_mcp_personal.headers.Authorization).toBe('Bearer one-time-token')
     expect(wrapper.text()).toContain('本页面刷新后不再显示')
   })
