@@ -5,6 +5,7 @@
 | 贡献者 | GitHub | 角色 |
 |---|---|---|
 | 智链细米团队 | — | 项目维护、架构与实现 |
+| cmijohnson | [@cmijohnson](https://github.com/cmijohnson) | 仓库所有者、维护者 |
 | JulyOS | [@Julyos](https://github.com/Julyos) | 贡献者 |
 | JinweiOS | [@JinweiOS](https://github.com/JinweiOS) | 贡献者 |
 
