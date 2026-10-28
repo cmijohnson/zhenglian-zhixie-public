@@ -1,0 +1,26 @@
+      } else if (el.pttElement) {
+        const duration = el.pttElement.duration ? `${el.pttElement.duration}"` : ''
+        const pttUrl = el.pttElement.filePath || el.pttElement.sourcePath || el.pttElement.pttUrl || el.pttElement.audioUrl || ''
+        nodes.push(pttUrl ? (
+          <audio key={`ptt-${i}`} controls preload="none" src={pttUrl} className="inline-block h-9 max-w-[280px] align-middle" aria-label={`语音 ${duration}`} />
+        ) : (
+          <span key={`ptt-${i}`} className="text-xs text-muted-foreground/70">语音{duration ? ` ${duration}` : ''}（媒体未缓存）</span>
+        ))
+        hasContent = true
+      } else if (el.videoElement) {
+        const videoUrl = el.videoElement.filePath || el.videoElement.sourcePath || el.videoElement.videoUrl || ''
+        nodes.push(videoUrl ? (
+          <video key={`video-${i}`} controls preload="metadata" src={videoUrl} className="inline-block max-h-52 max-w-[320px] rounded-lg bg-black align-middle" aria-label="视频消息" />
+        ) : (
+          <span key={`video-${i}`} className="text-xs text-muted-foreground/70">视频（媒体未缓存）</span>
+        ))
+        hasContent = true
+      } else if (el.fileElement) {
+        const fileName = el.fileElement.fileName || '文件'
+        const fileUrl = el.fileElement.filePath || el.fileElement.sourcePath || el.fileElement.fileUrl || el.fileElement.downloadUrl || ''
+        nodes.push(fileUrl ? (
+          <a key={`file-${i}`} href={fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs underline underline-offset-2 text-foreground/80">{fileName}</a>
+        ) : (
+          <span key={`file-${i}`} className="text-xs text-muted-foreground/70">{fileName}（媒体未缓存）</span>
+        ))
+        hasContent = true

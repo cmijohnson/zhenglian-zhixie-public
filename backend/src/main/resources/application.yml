@@ -1,0 +1,131 @@
+spring:
+  application:
+    name: yingge-cloud
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/yingge_cloud}
+    username: ${DB_USERNAME:yingge_app}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+        default_batch_fetch_size: 50
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  session:
+    jdbc:
+      initialize-schema: never
+    timeout: ${SESSION_TIMEOUT:30d}
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+
+server:
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        name: YINGGE_SESSION
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
+        max-age: ${SESSION_COOKIE_MAX_AGE:30d}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+logging:
+  level:
+    # The Feishu SDK otherwise logs its ephemeral WebSocket access key and ticket
+    # as part of the connected URL at INFO level.
+    com.lark.oapi.ws.Listener: WARN
+    com.lark.oapi.ws.Client: WARN
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+
+app:
+  timezone: Asia/Shanghai
+  daily-report:
+    start-date: ${DAILY_REPORT_START_DATE:2026-07-15}
+  release:
+    version: ${APP_RELEASE_VERSION:2026.09.07.2}
+  content:
+    campaign:
+      name: 2026年夏季自媒体内容任务
+      start-date: 2026-07-15
+      end-date: 2026-08-20
+      xiaohongshu-target: 20
+      douyin-target: 20
+  bootstrap:
+    admin-username: ${BOOTSTRAP_ADMIN_USERNAME:}
+    admin-password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+    admin-display-name: ${BOOTSTRAP_ADMIN_DISPLAY_NAME:系统管理员}
+  ai:
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:gpt-4.1-mini}
+    timeout: 90s
+  ai-admin:
+    master-key: ${AI_SETTINGS_MASTER_KEY:}
+  migration:
+    sqlite-path: ${MIGRATION_SQLITE_PATH:}
+    source-key: ${MIGRATION_SOURCE_KEY:yingge-mac-primary}
+    organization-id: ${MIGRATION_ORGANIZATION_ID:}
+    owner-membership-id: ${MIGRATION_OWNER_MEMBERSHIP_ID:}
+    dry-run: ${MIGRATION_DRY_RUN:true}
+    batch-size: ${MIGRATION_BATCH_SIZE:200}
+    backup-dir: ${MIGRATION_BACKUP_DIR:/migration/backups}
+    report-dir: ${MIGRATION_REPORT_DIR:/migration/reports}
+  mcp:
+    enabled: ${MCP_ENABLED:true}
+    issuer: ${MCP_ISSUER:http://localhost:8080}
+    resource-uri: ${MCP_RESOURCE_URI:http://localhost:8080/mcp}
+    allowed-origins: ${MCP_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:8080}
+    allowed-hosts: ${MCP_ALLOWED_HOSTS:localhost:8080,127.0.0.1:8080}
+    access-token-ttl: 15m
+    refresh-token-ttl: 30d
+    authorization-code-ttl: 5m
+    authorization-request-ttl: 10m
+    approval-ttl: 5m
+    session-idle-ttl: 30m
+    max-sessions-per-grant: 5
+  mobile:
+    push-encryption-key: ${MOBILE_PUSH_ENCRYPTION_KEY:}
+    push-dispatch-delay-ms: ${MOBILE_PUSH_DISPATCH_DELAY_MS:30000}
+    release-dir: ${MOBILE_RELEASE_DIR:/data/mobile-releases}
+  feishu:
+    base-url: https://open.feishu.cn
+    workbench-base-url: ${FEISHU_WORKBENCH_BASE_URL:}
+    master-key: ${FEISHU_INTEGRATION_MASTER_KEY:}
+    run-delay-ms: ${FEISHU_SYNC_RUN_DELAY_MS:60000}
+    oauth-redirect-uri: ${FEISHU_OAUTH_REDIRECT_URI:}
+    allow-insecure-oauth-pilot: ${FEISHU_ALLOW_INSECURE_OAUTH_PILOT:false}
+    long-connection-enabled: ${FEISHU_LONG_CONNECTION_ENABLED:true}
+    inbound-run-delay-ms: ${FEISHU_INBOUND_RUN_DELAY_MS:5000}
+  qq:
+    bridge-base-url: ${QQ_BRIDGE_BASE_URL:}
+    bridge-token: ${QQ_BRIDGE_SHARED_TOKEN:}
+    master-key: ${QQ_DATA_MASTER_KEY:}
+    retention-dir: ${QQ_RETENTION_DIR:/data/qq-imports}
+    retention-days: 30
+    max-messages-per-import: 10000

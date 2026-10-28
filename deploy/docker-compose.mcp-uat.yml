@@ -1,0 +1,33 @@
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: ${MCP_UAT_POSTGRES_DB:-yingge_cloud_mcp_uat}
+    volumes:
+      - ${MCP_UAT_POSTGRES_DATA_DIR:?MCP_UAT_POSTGRES_DATA_DIR is required}:/var/lib/postgresql
+
+  backend:
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${MCP_UAT_POSTGRES_DB:-yingge_cloud_mcp_uat}
+      MCP_ENABLED: "true"
+      MCP_ISSUER: ${MCP_UAT_ISSUER:?MCP_UAT_ISSUER is required}
+      MCP_RESOURCE_URI: ${MCP_UAT_RESOURCE_URI:?MCP_UAT_RESOURCE_URI is required}
+      MCP_ALLOWED_ORIGINS: ${MCP_UAT_ALLOWED_ORIGINS:?MCP_UAT_ALLOWED_ORIGINS is required}
+      MCP_ALLOWED_HOSTS: ${MCP_UAT_ALLOWED_HOSTS:?MCP_UAT_ALLOWED_HOSTS is required}
+      SESSION_COOKIE_SECURE: ${MCP_UAT_SESSION_COOKIE_SECURE:-true}
+
+  gateway:
+    ports: !override
+      - "127.0.0.1:${MCP_UAT_LOCAL_PORT:-19090}:80"
+
+  migration:
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${MCP_UAT_POSTGRES_DB:-yingge_cloud_mcp_uat}
+    volumes:
+      - ${MCP_UAT_MIGRATION_DIR:?MCP_UAT_MIGRATION_DIR is required}:/migration
+
+  backup:
+    environment:
+      PGDATABASE: ${MCP_UAT_POSTGRES_DB:-yingge_cloud_mcp_uat}
+    volumes:
+      - ${MCP_UAT_BACKUP_DIR:?MCP_UAT_BACKUP_DIR is required}:/backups
+      - ./deploy/scripts/backup.sh:/usr/local/bin/yingge-backup:ro

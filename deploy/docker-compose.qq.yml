@@ -1,0 +1,42 @@
+services:
+  backend:
+    environment:
+      QQ_BRIDGE_BASE_URL: http://qq-bridge:40700
+      QQ_BRIDGE_SHARED_TOKEN: ${QQ_BRIDGE_SHARED_TOKEN:?QQ bridge token is required}
+      QQ_DATA_MASTER_KEY: ${QQ_DATA_MASTER_KEY:?QQ data encryption key is required}
+      QQ_RETENTION_DIR: /data/qq-imports
+      MOBILE_RELEASE_DIR: /data/mobile-releases
+    volumes:
+      - qq-imports:/data/qq-imports
+      - ${MOBILE_RELEASE_HOST_DIR:-./.data/mobile-releases}:/data/mobile-releases:ro
+
+  qq-bridge:
+    build:
+      context: ./qq-bridge
+    restart: unless-stopped
+    environment:
+      PORT: 40700
+      QQ_BRIDGE_SHARED_TOKEN: ${QQ_BRIDGE_SHARED_TOKEN:?QQ bridge token is required}
+      QCE_IMAGE: ${QCE_IMAGE:-yingge/napcat-qce:58fc533f1bfdbf4535be0f83af4e595d4d7ecf27}
+      QCE_NETWORK: ${QQ_PRIVATE_NETWORK:-yingge-cloud-qq-private}
+      QCE_MAX_INSTANCES: ${QCE_MAX_INSTANCES:-20}
+      QCE_EXPORT_QUOTA_GIB: ${QCE_EXPORT_QUOTA_GIB:-10}
+      QCE_MIN_FREE_PERCENT: ${QCE_MIN_FREE_PERCENT:-15}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app
+      - yingge-qq-private
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  app: {}
+  yingge-qq-private:
+    name: ${QQ_PRIVATE_NETWORK:-yingge-cloud-qq-private}
+    # No ports are published from per-user QCE containers. Outbound access is
+    # required for QQ login and message synchronization.
+    internal: false
+
+volumes:
+  qq-imports:

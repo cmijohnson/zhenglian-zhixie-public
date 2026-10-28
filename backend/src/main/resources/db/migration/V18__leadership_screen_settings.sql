@@ -1,0 +1,22 @@
+CREATE TABLE leadership_screen_settings (
+    organization_id uuid PRIMARY KEY REFERENCES organizations(id) ON DELETE CASCADE,
+    animations_enabled boolean NOT NULL DEFAULT true,
+    standby_enabled boolean NOT NULL DEFAULT true,
+    idle_timeout_minutes integer NOT NULL DEFAULT 20,
+    scene_duration_seconds integer NOT NULL DEFAULT 12,
+    event_duration_seconds integer NOT NULL DEFAULT 7,
+    motion_intensity varchar(20) NOT NULL DEFAULT 'CINEMATIC',
+    scene_order jsonb NOT NULL DEFAULT '["time","culture","briefing","trend","champions","funnel","mission"]'::jsonb,
+    enabled_scenes jsonb NOT NULL DEFAULT '["time","culture","briefing","trend","champions","funnel","mission"]'::jsonb,
+    enabled_events jsonb NOT NULL DEFAULT '["zeroBreakthrough","milestone","trendSurge","conversionStage","taskMilestone","rankingChange","teamMomentum"]'::jsonb,
+    updated_by_membership_id uuid REFERENCES memberships(id),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 0,
+    CONSTRAINT leadership_idle_timeout_check CHECK (idle_timeout_minutes BETWEEN 5 AND 120),
+    CONSTRAINT leadership_scene_duration_check CHECK (scene_duration_seconds BETWEEN 5 AND 60),
+    CONSTRAINT leadership_event_duration_check CHECK (event_duration_seconds BETWEEN 3 AND 15),
+    CONSTRAINT leadership_motion_intensity_check CHECK (motion_intensity IN ('SUBTLE', 'CINEMATIC', 'STRONG')),
+    CONSTRAINT leadership_scene_order_array_check CHECK (jsonb_typeof(scene_order) = 'array'),
+    CONSTRAINT leadership_enabled_scenes_array_check CHECK (jsonb_typeof(enabled_scenes) = 'array'),
+    CONSTRAINT leadership_enabled_events_array_check CHECK (jsonb_typeof(enabled_events) = 'array')
+);

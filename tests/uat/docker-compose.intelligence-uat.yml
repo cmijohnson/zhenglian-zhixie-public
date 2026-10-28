@@ -1,0 +1,27 @@
+services:
+  ai-mock:
+    build:
+      context: ./tests/uat/ai-mock
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [data]
+
+  backend:
+    environment:
+      AI_BASE_URL: http://ai-mock:8080/v1
+      AI_API_KEY: uat-contract-key
+      AI_MODEL: yingge-uat-contract-model
+      APP_CUSTOMER_INTELLIGENCE_WORKER_INITIAL_DELAY: 30000
+    depends_on:
+      ai-mock:
+        condition: service_healthy
+
+  embedding:
+    deploy:
+      resources:
+        limits:
+          memory: 3G

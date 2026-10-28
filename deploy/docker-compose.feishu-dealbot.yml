@@ -1,0 +1,7 @@
+services:
+  backend:
+    image: yingge/cloud-backend:2026.09.06.1-v60-feishu-dealbot-amd64
+    environment:
+      APP_RELEASE_VERSION: 2026.09.06.1
+  gateway:
+    image: yingge/cloud-gateway:2026.09.06.1-v60-feishu-dealbot-amd64

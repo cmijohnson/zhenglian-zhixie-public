@@ -1,0 +1,6 @@
+ARG BASE_IMAGE=yingge-cloud-uat-backend:base
+FROM ${BASE_IMAGE}
+USER root
+RUN install -d -m 0700 -o app -g app /data/qq-imports
+COPY --chown=app:app backend/target/yingge-cloud-backend-0.1.0-SNAPSHOT.jar /app/app.jar
+USER app

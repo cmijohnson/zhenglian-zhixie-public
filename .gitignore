@@ -1,0 +1,25 @@
+# 构建产物
+target/
+node_modules/
+dist/
+build/
+*.class
+*.jar
+*.log
+
+# 本地环境与凭据
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# 数据与缓存
+uploads/
+logs/
+tmp/
+*.sqlite
+*.db
+.DS_Store
+.playwright-cli/

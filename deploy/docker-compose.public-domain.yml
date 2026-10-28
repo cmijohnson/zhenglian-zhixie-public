@@ -1,0 +1,13 @@
+services:
+  backend:
+    environment:
+      # Apply this overlay only after the public gateway serves a publicly
+      # trusted certificate for the exact hostname below.
+      SESSION_COOKIE_SECURE: "true"
+      FEISHU_OAUTH_REDIRECT_URI: https://example.com/api/v1/auth/feishu/callback
+      FEISHU_WORKBENCH_BASE_URL: https://example.com
+      FEISHU_ALLOW_INSECURE_OAUTH_PILOT: "false"
+      MCP_ISSUER: https://example.com
+      MCP_RESOURCE_URI: https://example.com/mcp
+      MCP_ALLOWED_ORIGINS: https://example.com,http://127.0.0.1:8080
+      MCP_ALLOWED_HOSTS: example.com,127.0.0.1:8080,127.0.0.1:8080,localhost:8080

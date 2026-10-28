@@ -1,0 +1,165 @@
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-yingge/postgres-pgvector:18.4-vector0.8.6}
+    build:
+      context: .
+      dockerfile: deploy/postgres/Dockerfile.pgvector18.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-yingge_cloud}
+      POSTGRES_USER: ${POSTGRES_USER:-yingge_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      PGDATA: /var/lib/postgresql/18/docker
+      TZ: ${TZ:-Asia/Shanghai}
+      PGTZ: UTC
+    command:
+      - postgres
+      - -c
+      - fsync=on
+      - -c
+      - full_page_writes=on
+      - -c
+      - synchronous_commit=on
+    volumes:
+      - ${POSTGRES_DATA_DIR:-./.data/postgres}:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-yingge_app} -d ${POSTGRES_DB:-yingge_cloud}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [data]
+    stop_grace_period: 60s
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-yingge_cloud}
+      DB_USERNAME: ${POSTGRES_USER:-yingge_app}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT:-30d}
+      SESSION_COOKIE_MAX_AGE: ${SESSION_COOKIE_MAX_AGE:-30d}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      BOOTSTRAP_ADMIN_DISPLAY_NAME: ${BOOTSTRAP_ADMIN_DISPLAY_NAME:-系统管理员}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4.1-mini}
+      AI_SETTINGS_MASTER_KEY: ${AI_SETTINGS_MASTER_KEY:-}
+      YINGGE_WEBHOOK_MASTER_KEY: ${YINGGE_WEBHOOK_MASTER_KEY:-}
+      FEISHU_INTEGRATION_MASTER_KEY: ${FEISHU_INTEGRATION_MASTER_KEY:-}
+      FEISHU_SYNC_RUN_DELAY_MS: ${FEISHU_SYNC_RUN_DELAY_MS:-60000}
+      FEISHU_WORKBENCH_BASE_URL: ${FEISHU_WORKBENCH_BASE_URL:-}
+      FEISHU_OAUTH_REDIRECT_URI: ${FEISHU_OAUTH_REDIRECT_URI:-}
+      FEISHU_ALLOW_INSECURE_OAUTH_PILOT: ${FEISHU_ALLOW_INSECURE_OAUTH_PILOT:-false}
+      FEISHU_LONG_CONNECTION_ENABLED: ${FEISHU_LONG_CONNECTION_ENABLED:-true}
+      FEISHU_INBOUND_RUN_DELAY_MS: ${FEISHU_INBOUND_RUN_DELAY_MS:-5000}
+      APP_RELEASE_VERSION: ${APP_RELEASE_VERSION:-2026.09.07.2}
+      MCP_ENABLED: ${MCP_ENABLED:-true}
+      MCP_ISSUER: ${MCP_ISSUER:-http://localhost:${HTTP_PORT:-8080}}
+      MCP_RESOURCE_URI: ${MCP_RESOURCE_URI:-http://localhost:${HTTP_PORT:-8080}/mcp}
+      MCP_ALLOWED_ORIGINS: ${MCP_ALLOWED_ORIGINS:-http://localhost:${HTTP_PORT:-8080}}
+      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-localhost:${HTTP_PORT:-8080},127.0.0.1:${HTTP_PORT:-8080}}
+      JAVA_TOOL_OPTIONS: "${JAVA_TOOL_OPTIONS:-} -Dlogging.level.com.lark.oapi.ws.Listener=WARN"
+      TZ: ${TZ:-Asia/Shanghai}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health/readiness | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks: [app, data]
+    stop_grace_period: 45s
+
+  embedding:
+    image: ollama/ollama@sha256:1685741456770df6e3cceb2a945a5f75e020f658d1701509668d6f4688f1dd3f
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/usr/local/bin/yingge-embedding-entrypoint"]
+    environment:
+      OLLAMA_HOST: 0.0.0.0:8080
+      OLLAMA_MODELS: /data/models
+      OLLAMA_KEEP_ALIVE: 24h
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-m3}
+    volumes:
+      - embedding_cache:/data
+      - ./deploy/scripts/embedding-entrypoint.sh:/usr/local/bin/yingge-embedding-entrypoint:ro
+    networks:
+      data: {}
+      model_egress:
+        gw_priority: 1
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/embedding-ready && ollama list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 90
+
+  gateway:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    networks: [app]
+
+  migration:
+    build:
+      context: ./backend
+    profiles: [tools]
+    environment:
+      SPRING_PROFILES_ACTIVE: migration
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
+      SPRING_MAIN_LAZY_INITIALIZATION: "true"
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-yingge_cloud}
+      DB_USERNAME: ${POSTGRES_USER:-yingge_app}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      MIGRATION_SQLITE_PATH: ${MIGRATION_SQLITE_PATH:-/migration/source/yingge-student-archive.sqlite}
+      MIGRATION_SOURCE_KEY: ${MIGRATION_SOURCE_KEY:-yingge-mac-primary}
+      MIGRATION_ORGANIZATION_ID: ${MIGRATION_ORGANIZATION_ID:-}
+      MIGRATION_OWNER_MEMBERSHIP_ID: ${MIGRATION_OWNER_MEMBERSHIP_ID:-}
+      MIGRATION_DRY_RUN: ${MIGRATION_DRY_RUN:-true}
+      MIGRATION_BATCH_SIZE: ${MIGRATION_BATCH_SIZE:-200}
+      MIGRATION_BACKUP_DIR: /migration/backups
+      MIGRATION_REPORT_DIR: /migration/reports
+    volumes:
+      - ${MIGRATION_DIR:-./.data/migration}:/migration
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [data]
+
+  backup:
+    image: pgvector/pgvector:pg18
+    profiles: [tools]
+    environment:
+      PGHOST: postgres
+      PGDATABASE: ${POSTGRES_DB:-yingge_cloud}
+      PGUSER: ${POSTGRES_USER:-yingge_app}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      BACKUP_DIR: /backups
+    volumes:
+      - ${BACKUP_DIR:-./.data/backups}:/backups
+      - ./deploy/scripts/backup.sh:/usr/local/bin/yingge-backup:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/yingge-backup"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [data]
+
+networks:
+  app:
+    internal: false
+  data:
+    internal: true
+  model_egress:
+    internal: false
+
+volumes:
+  embedding_cache:

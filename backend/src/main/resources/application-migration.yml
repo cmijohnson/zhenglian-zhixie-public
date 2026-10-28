@@ -1,0 +1,6 @@
+spring:
+  main:
+    # The migration runner is a non-web batch process. Laziness keeps servlet-only
+    # controllers and security infrastructure out of its application context while
+    # still eagerly discovering and executing ApplicationRunner beans.
+    lazy-initialization: true

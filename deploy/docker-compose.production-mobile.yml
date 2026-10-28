@@ -1,0 +1,11 @@
+services:
+  backend:
+    image: ${BACKEND_IMAGE:?BACKEND_IMAGE is required for an immutable production release}
+
+  gateway:
+    image: ${GATEWAY_IMAGE:?GATEWAY_IMAGE is required for an immutable production release}
+    ports:
+      - "80:80"
+
+  qq-bridge:
+    image: ${QQ_BRIDGE_IMAGE:?QQ_BRIDGE_IMAGE is required for an immutable production release}

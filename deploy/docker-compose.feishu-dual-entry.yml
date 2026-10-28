@@ -1,0 +1,9 @@
+services:
+  backend:
+    image: yingge/cloud-backend:2026.09.07.2-v63-feishu-dual-entry-amd64
+    environment:
+      APP_RELEASE_VERSION: 2026.09.07.2
+      FEISHU_WORKBENCH_BASE_URL: https://example.com
+
+  gateway:
+    image: yingge/cloud-gateway:2026.09.07.2-v63-feishu-dual-entry-amd64

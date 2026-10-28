@@ -1,0 +1,1189 @@
+openapi: 3.1.0
+info:
+  title: Yingge Cloud Mobile API
+  version: 2026.08.26.17
+  description: |
+    Android and iOS contract for device authentication, mobile bootstrap, push,
+    QQ WebView tickets, application releases, customer reads and the simplified
+    deal approval flow. Existing employee business APIs remain available under
+    /api/v1 and use the same Mobile Bearer authentication.
+    Retired business-cycle and deal-forecast write operations return the stable
+    error code FEATURE_RETIRED and never create new records.
+servers:
+  - url: "{scheme}://{host}"
+    variables:
+      scheme:
+        default: http
+        enum: [http, https]
+      host:
+        default: 127.0.0.1
+security:
+  - mobileBearer: []
+x-mobile-bearer-required-headers:
+  - X-Yingge-Device-Id
+  - X-Yingge-Platform
+  - X-Yingge-App-Version
+  - X-Yingge-Version-Code
+x-native-client-operations:
+  # This list is the fail-closed native client surface. CI compares it
+  # bidirectionally with the Android and iOS endpoint catalogs.
+  - "ANDROID,IOS|POST|/api/v1/mobile/auth/registration-options"
+  - "ANDROID,IOS|POST|/api/v1/mobile/auth/register"
+  - "ANDROID,IOS|POST|/api/v1/mobile/auth/login"
+  - "ANDROID,IOS|POST|/api/v1/mobile/auth/refresh"
+  - "ANDROID,IOS|POST|/api/v1/mobile/auth/logout"
+  - "ANDROID,IOS|POST|/api/v1/auth/password"
+  - "ANDROID,IOS|GET|/api/v1/mobile/auth/devices"
+  - "ANDROID,IOS|DELETE|/api/v1/mobile/auth/devices/{deviceId}"
+  - "ANDROID,IOS|GET|/api/v1/mobile/bootstrap"
+  - "ANDROID|POST|/api/v1/mobile/dashboard/greeting"
+  - "ANDROID|POST|/api/v1/mobile/customers/{customerId}/insight"
+  - "ANDROID,IOS|POST|/api/v1/mobile/devices/push-registration"
+  - "ANDROID,IOS|DELETE|/api/v1/mobile/devices/push-registration"
+  - "ANDROID,IOS|PUT|/api/v1/mobile/devices/notification-preferences"
+  - "ANDROID,IOS|POST|/api/v1/mobile/web-sessions"
+  - "ANDROID,IOS|GET|/api/v1/mobile/app-releases/current"
+  - "ANDROID|GET|/api/v1/mobile/app-releases/{releaseId}/apk"
+  - "ANDROID,IOS|GET|/api/v1/dashboard"
+  - "ANDROID|GET|/api/v1/team-data/overview"
+  - "ANDROID,IOS|GET|/api/v1/customers"
+  - "ANDROID,IOS|POST|/api/v1/customers"
+  - "ANDROID,IOS|GET|/api/v1/customers/{customerId}"
+  - "ANDROID,IOS|PATCH|/api/v1/customers/{customerId}"
+  - "ANDROID,IOS|GET|/api/v1/customers/{customerId}/collaboration"
+  - "ANDROID|PUT|/api/v1/customers/{customerId}/collaborators"
+  - "ANDROID,IOS|POST|/api/v1/customers/{customerId}/transfer"
+  - "ANDROID|POST|/api/v1/customers/{customerId}/archive"
+  - "ANDROID|GET|/api/v1/customers/{customerId}/classifications"
+  - "ANDROID|POST|/api/v1/customers/{customerId}/classifications"
+  - "ANDROID|GET|/api/v1/customers/{customerId}/deadline-shadow"
+  - "ANDROID|GET|/api/v1/exports/customers/{customerId}/timeline"
+  - "ANDROID|POST|/api/v1/imports/customers/preview"
+  - "ANDROID|POST|/api/v1/imports/{jobId}/commit"
+  - "ANDROID|GET|/api/v1/exports/customers"
+  - "ANDROID,IOS|GET|/api/v1/customers/{customerId}/interactions"
+  - "ANDROID,IOS|POST|/api/v1/customers/{customerId}/interactions"
+  - "ANDROID,IOS|POST|/api/v1/customers/{customerId}/deal-requests"
+  - "ANDROID,IOS|GET|/api/v1/reminders"
+  - "ANDROID,IOS|PATCH|/api/v1/reminders/{reminderId}"
+  - "ANDROID,IOS|GET|/api/v1/daily-reports/today"
+  - "ANDROID,IOS|PUT|/api/v1/daily-reports/{date}"
+  - "ANDROID,IOS|GET|/api/v1/notifications"
+  - "ANDROID|POST|/api/v1/notifications/{notificationId}/read"
+  - "ANDROID|POST|/api/v1/notifications/read-all"
+  - "ANDROID,IOS|GET|/api/v1/tasks"
+  - "ANDROID,IOS|POST|/api/v1/tasks/{taskId}/claim"
+  - "ANDROID,IOS|PATCH|/api/v1/tasks/{taskId}/my-assignment"
+  - "ANDROID,IOS|GET|/api/v1/performance/today"
+  - "ANDROID,IOS|POST|/api/v1/performance/claims"
+  - "ANDROID,IOS|POST|/api/v1/performance/claims/{claimId}/evidence"
+  - "ANDROID,IOS|POST|/api/v1/performance/claims/{claimId}/submit"
+  - "ANDROID,IOS|GET|/api/v1/consultations"
+  - "ANDROID,IOS|POST|/api/v1/consultations"
+  - "ANDROID,IOS|GET|/api/v1/consultations/{consultationId}"
+  - "ANDROID,IOS|GET|/api/v1/consultations/candidates"
+  - "ANDROID|POST|/api/v1/consultations/{consultationId}/accept"
+  - "ANDROID|POST|/api/v1/consultations/{consultationId}/reject"
+  - "ANDROID|POST|/api/v1/consultations/{consultationId}/end"
+  - "ANDROID,IOS|POST|/api/v1/consultations/{consultationId}/complete"
+  - "ANDROID,IOS|GET|/api/v1/consultation-failure-reasons"
+  - "ANDROID,IOS|GET|/api/v1/content-tasks/overview"
+  - "ANDROID,IOS|POST|/api/v1/content-posts"
+  - "ANDROID,IOS|PATCH|/api/v1/content-posts/{postId}/metrics"
+  - "ANDROID,IOS|GET|/api/v1/circle/posts"
+  - "ANDROID|GET|/api/v1/circle/senders"
+  - "ANDROID,IOS|GET|/api/v1/announcements"
+  - "ANDROID,IOS|GET|/api/v1/assistant/availability"
+  - "ANDROID|POST|/api/v1/assistant/customer-draft"
+  - "ANDROID|POST|/api/v1/assistant/interaction-draft"
+  - "ANDROID,IOS|GET|/api/v1/assistant/customers/{customerId}/summary"
+  - "ANDROID|GET|/api/v1/assistant/customers/{customerId}/next-actions"
+  - "ANDROID|GET|/api/v1/assistant/customers/{customerId}/data-quality"
+  - "ANDROID|GET|/api/v1/assistant/daily-briefing"
+  - "ANDROID,IOS|GET|/api/v1/releases"
+  - "ANDROID,IOS|GET|/api/v1/releases/current/unacknowledged"
+  - "ANDROID,IOS|POST|/api/v1/releases/{releaseId}/acknowledge"
+  - "ANDROID,IOS|GET|/api/v1/agent/authorizations"
+  - "ANDROID,IOS|DELETE|/api/v1/agent/authorizations/{authorizationId}"
+  - "ANDROID,IOS|GET|/api/v1/customer-pools"
+  - "ANDROID,IOS|POST|/api/v1/customer-pools/{entryId}/claims"
+  - "ANDROID,IOS|GET|/api/v1/second-line-recruitments"
+  - "ANDROID,IOS|POST|/api/v1/second-line-recruitments/{recruitmentId}/claim"
+  - "ANDROID|GET|/api/v1/mobile/admin/overview"
+  - "ANDROID|GET|/api/v1/admin/members"
+  - "ANDROID|POST|/api/v1/admin/members"
+  - "ANDROID|PATCH|/api/v1/admin/members/{membershipId}"
+  - "ANDROID|POST|/api/v1/admin/members/{membershipId}/delete"
+  - "ANDROID|GET|/api/v1/admin/teams"
+  - "ANDROID|POST|/api/v1/admin/teams"
+  - "ANDROID|PUT|/api/v1/admin/teams/{teamId}/leader"
+  - "ANDROID|DELETE|/api/v1/admin/teams/{teamId}"
+  - "ANDROID|GET|/api/v1/admin/registration-codes"
+  - "ANDROID|POST|/api/v1/admin/registration-codes"
+  - "ANDROID|POST|/api/v1/admin/registration-codes/{codeId}/disable"
+  - "ANDROID|GET|/api/v1/admin/deal-requests"
+  - "ANDROID|POST|/api/v1/admin/deal-requests/{requestId}/approve"
+  - "ANDROID|POST|/api/v1/admin/deal-requests/{requestId}/reject"
+  - "ANDROID|GET|/api/v1/admin/market/classification-reviews"
+  - "ANDROID|GET|/api/v1/admin/market/classification-anomalies"
+  - "ANDROID|POST|/api/v1/admin/market/classification-reviews/{classificationId}/select"
+  - "ANDROID|POST|/api/v1/admin/market/classification-reviews/{classificationId}/review"
+  - "ANDROID|GET|/api/v1/customers/{customerId}/classifications/current"
+  - "ANDROID|GET|/api/v1/admin/cross-sales"
+  - "ANDROID|GET|/api/v1/admin/cross-sales/export.xlsx"
+  - "ANDROID|POST|/api/v1/tasks/{taskId}/close"
+  - "ANDROID|DELETE|/api/v1/tasks/{taskId}"
+  - "ANDROID|GET|/api/v1/tasks/matrix"
+  - "ANDROID|PATCH|/api/v1/tasks/{taskId}/assignments/{assignmentId}"
+  - "ANDROID|POST|/api/v1/tasks"
+  - "ANDROID|PATCH|/api/v1/content-posts/{postId}/review"
+  - "ANDROID|POST|/api/v1/announcements/{announcementId}/archive"
+  - "ANDROID|POST|/api/v1/announcements"
+  - "ANDROID|PATCH|/api/v1/announcements/{announcementId}"
+  - "ANDROID|GET|/api/v1/daily-reports/calendar"
+  - "ANDROID|GET|/api/v1/performance/claims"
+  - "ANDROID|POST|/api/v1/performance/claims/{claimId}/review"
+  - "ANDROID|GET|/api/v1/performance/history"
+  - "ANDROID|GET|/api/v1/performance/leaderboard"
+  - "ANDROID|GET|/api/v1/performance/activities"
+  - "ANDROID|POST|/api/v1/performance/activities"
+  - "ANDROID|POST|/api/v1/performance/activities/{activityId}/evidence"
+  - "ANDROID|POST|/api/v1/performance/activities/{activityId}/complete"
+  - "ANDROID|POST|/api/v1/performance/activities/{activityId}/allocate"
+  - "ANDROID|POST|/api/v1/performance/activities/{activityId}/review"
+  - "ANDROID|GET|/api/v1/performance/admin/rules"
+  - "ANDROID|POST|/api/v1/performance/admin/rules"
+  - "ANDROID|GET|/api/v1/performance/admin/participants"
+  - "ANDROID|POST|/api/v1/performance/admin/participants"
+  - "ANDROID|PATCH|/api/v1/performance/admin/participants/{participantId}"
+  - "ANDROID|GET|/api/v1/performance/admin/days/{date}"
+  - "ANDROID|POST|/api/v1/performance/admin/days/{date}/settle"
+  - "ANDROID|POST|/api/v1/performance/admin/days/{date}/reopen"
+  - "ANDROID|GET|/api/v1/performance/admin/export"
+  - "ANDROID|POST|/api/v1/performance/admin/manual-entries"
+  - "ANDROID|GET|/api/v1/tags"
+  - "ANDROID|POST|/api/v1/tags"
+  - "ANDROID|GET|/api/v1/dictionaries"
+  - "ANDROID|POST|/api/v1/dictionaries"
+  - "ANDROID|GET|/api/v1/admin/assistant-settings"
+  - "ANDROID|PUT|/api/v1/admin/assistant-settings"
+  - "ANDROID|GET|/api/v1/admin/customer-intelligence/settings"
+  - "ANDROID|GET|/api/v1/admin/customer-intelligence/runtime"
+  - "ANDROID|POST|/api/v1/admin/customer-intelligence/backfill/resume"
+  - "ANDROID|POST|/api/v1/admin/customer-intelligence/backfill/pause"
+  - "ANDROID|GET|/api/v1/admin/customer-enrichment-jobs"
+  - "ANDROID|POST|/api/v1/admin/customer-enrichment-jobs/preview"
+  - "ANDROID|POST|/api/v1/admin/customer-enrichment-jobs/{jobId}/commit"
+  - "ANDROID|GET|/api/v1/admin/customer-enrichment-jobs/{jobId}/report.csv"
+  - "ANDROID|GET|/api/v1/admin/agent/authorizations"
+  - "ANDROID|DELETE|/api/v1/admin/agent/authorizations/{authorizationId}"
+  - "ANDROID|GET|/api/v1/admin/audit"
+  - "ANDROID|GET|/api/v1/admin/audit/export"
+  - "ANDROID|GET|/api/v1/admin/wecom-webhooks"
+  - "ANDROID|POST|/api/v1/admin/wecom-webhooks"
+  - "ANDROID|DELETE|/api/v1/admin/wecom-webhooks/{webhookId}"
+  - "ANDROID|GET|/api/v1/admin/wecom-webhooks/deliveries"
+  - "ANDROID|POST|/api/v1/admin/wecom-webhooks/deliveries/{deliveryId}/retry"
+  - "ANDROID|GET|/api/v1/admin/leadership-screen-settings"
+  - "ANDROID|PUT|/api/v1/admin/leadership-screen-settings"
+  - "ANDROID|GET|/api/v1/admin/follow-up-policy"
+  - "ANDROID|PUT|/api/v1/admin/follow-up-policy"
+  - "ANDROID|GET|/api/v1/admin/consultation-settings"
+  - "ANDROID|PUT|/api/v1/admin/consultation-settings"
+  - "ANDROID|POST|/api/v1/admin/consultation-reasons"
+  - "ANDROID|PUT|/api/v1/admin/consultation-reasons/{reasonId}"
+  - "ANDROID|GET|/api/v1/leadership-dashboard"
+tags:
+  - name: MobileAuth
+  - name: MobileDevice
+  - name: MobileBootstrap
+  - name: MobilePush
+  - name: MobileWebSession
+  - name: MobileRelease
+  - name: Customer
+  - name: DealRequest
+  - name: EmployeeBusiness
+paths:
+  /api/v1/mobile/auth/registration-options:
+    post:
+      tags: [MobileAuth]
+      operationId: mobileRegistrationOptions
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RegistrationOptionsRequest'}
+      responses:
+        '200':
+          description: Active teams permitted by the registration code.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistrationOptions'}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/register:
+    post:
+      tags: [MobileAuth]
+      operationId: mobileRegister
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/MobileRegisterRequest'}
+      responses:
+        '201':
+          description: Account created. The client signs in through mobileLogin afterwards.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistrationResult'}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/login:
+    post:
+      tags: [MobileAuth]
+      operationId: mobileLogin
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/VersionCode'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceInstanceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileLoginRequest'
+      responses:
+        '200':
+          description: Device session created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileTokenResponse'
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/refresh:
+    post:
+      tags: [MobileAuth]
+      operationId: mobileRefresh
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/VersionCode'
+        - $ref: '#/components/parameters/Platform'
+        - $ref: '#/components/parameters/DeviceInstanceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileRefreshRequest'
+      responses:
+        '200':
+          description: Rotated access and refresh tokens. The submitted refresh token is invalid after success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileTokenResponse'
+        '401': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/logout:
+    post:
+      tags: [MobileAuth]
+      operationId: mobileLogout
+      responses:
+        '204': {description: Current device session revoked.}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/auth/password:
+    post:
+      tags: [MobileAuth]
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PasswordChangeRequest'}
+      responses:
+        '204': {description: Password changed; every Web and mobile session is revoked.}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/devices:
+    get:
+      tags: [MobileDevice]
+      operationId: listMobileDevices
+      responses:
+        '200':
+          description: Devices belonging to the current user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/MobileDevice'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/auth/devices/{deviceId}:
+    delete:
+      tags: [MobileDevice]
+      operationId: revokeMobileDevice
+      parameters:
+        - $ref: '#/components/parameters/DeviceId'
+      responses:
+        '204': {description: Device and all of its tokens revoked.}
+        '401': {$ref: '#/components/responses/ApiError'}
+        '404': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/bootstrap:
+    get:
+      tags: [MobileBootstrap]
+      operationId: getMobileBootstrap
+      responses:
+        '200':
+          description: Current actor, capability flags and server time.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MobileBootstrap'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/admin/overview:
+    get:
+      tags: [MobileBootstrap]
+      operationId: getMobileAdminOverview
+      responses:
+        '200':
+          description: Organization-scoped native management todo aggregation.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminOverview'}
+        '403': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/dashboard/greeting:
+    post:
+      tags: [MobileBootstrap]
+      operationId: getMobileDashboardGreeting
+      responses:
+        '200':
+          description: Server-time-calibrated salutation and cached AI subtitle.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DashboardGreeting'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/customers/{customerId}/insight:
+    post:
+      tags: [Assistant]
+      operationId: getMobileCustomerInsight
+      parameters: [{$ref: '#/components/parameters/CustomerId'}]
+      responses:
+        '200':
+          description: Stable JSON customer insight for the current timeline version.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MobileCustomerInsight'}
+        '401': {$ref: '#/components/responses/ApiError'}
+        '403': {$ref: '#/components/responses/ApiError'}
+        '404': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/devices/push-registration:
+    post:
+      tags: [MobilePush]
+      operationId: registerPushDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PushRegistrationRequest'}
+      responses:
+        '204': {description: Push registration stored encrypted.}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '401': {$ref: '#/components/responses/ApiError'}
+    delete:
+      tags: [MobilePush]
+      operationId: unregisterPushDevice
+      responses:
+        '204': {description: Push registration revoked.}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/devices/notification-preferences:
+    put:
+      tags: [MobilePush]
+      operationId: updateMobileNotificationPreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/NotificationPreferences'}
+      responses:
+        '200':
+          description: Saved preferences.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/NotificationPreferences'}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/web-sessions:
+    post:
+      tags: [MobileWebSession]
+      operationId: createMobileWebSessionTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/WebSessionTicketRequest'}
+      responses:
+        '201':
+          description: Single-use ticket valid for at most 60 seconds.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/WebSessionTicketResponse'}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/web-sessions/exchange:
+    post:
+      tags: [MobileWebSession]
+      operationId: exchangeMobileWebSessionTicket
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [ticket]
+              properties:
+                ticket: {type: string, minLength: 32, maxLength: 512}
+      responses:
+        '303':
+          description: Sets a short-lived HttpOnly path-scoped Web session and redirects to the approved path.
+          headers:
+            Location: {schema: {type: string}}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/app-releases/current:
+    get:
+      tags: [MobileRelease]
+      operationId: getCurrentMobileRelease
+      parameters:
+        - $ref: '#/components/parameters/AppVersion'
+        - $ref: '#/components/parameters/VersionCode'
+        - $ref: '#/components/parameters/Platform'
+      responses:
+        '200':
+          description: Latest compatible build and update policy.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MobileAppRelease'}
+        '204': {description: No release configured for this platform.}
+        '401': {$ref: '#/components/responses/ApiError'}
+  /api/v1/mobile/app-releases/{releaseId}/apk:
+    get:
+      tags: [MobileRelease]
+      operationId: downloadAndroidRelease
+      parameters:
+        - $ref: '#/components/parameters/ReleaseId'
+      responses:
+        '200':
+          description: Signed Android APK. iOS builds are installed manually and never returned here.
+          content:
+            application/vnd.android.package-archive:
+              schema: {type: string, format: binary}
+        '404': {$ref: '#/components/responses/ApiError'}
+  /api/v1/customers/{customerId}:
+    get:
+      tags: [Customer]
+      operationId: getCustomer
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: Customer visible to the current actor.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Customer'}
+        '401': {$ref: '#/components/responses/ApiError'}
+        '404': {$ref: '#/components/responses/ApiError'}
+    patch:
+      tags: [Customer]
+      operationId: updateCustomer
+      parameters: [{$ref: '#/components/parameters/CustomerId'}]
+      requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}
+      responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '409': {$ref: '#/components/responses/ApiError'}}
+  /api/v1/customers/{customerId}/deal-requests:
+    post:
+      tags: [DealRequest]
+      operationId: requestCustomerDeal
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Pending request created. No business body is accepted.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DealRequest'}
+        '400': {$ref: '#/components/responses/ApiError'}
+        '401': {$ref: '#/components/responses/ApiError'}
+        '403': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/admin/deal-requests:
+    get:
+      tags: [DealRequest]
+      operationId: listDealRequests
+      parameters:
+        - name: status
+          in: query
+          schema: {$ref: '#/components/schemas/DealRequestStatus'}
+        - name: page
+          in: query
+          schema: {type: integer, minimum: 0, default: 0}
+        - name: size
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 100, default: 30}
+      responses:
+        '200':
+          description: Organization-scoped requests; ORG_ADMIN only.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DealRequestPage'
+        '403': {$ref: '#/components/responses/ApiError'}
+  /api/v1/admin/deal-requests/{requestId}/approve:
+    post:
+      tags: [DealRequest]
+      operationId: approveDealRequest
+      parameters:
+        - $ref: '#/components/parameters/DealRequestId'
+        - $ref: '#/components/parameters/ExpectedVersion'
+      responses:
+        '200':
+          description: Customer deal state becomes WON. No review text is accepted.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DealRequest'}
+        '403': {$ref: '#/components/responses/ApiError'}
+        '404': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/admin/deal-requests/{requestId}/reject:
+    post:
+      tags: [DealRequest]
+      operationId: rejectDealRequest
+      parameters:
+        - $ref: '#/components/parameters/DealRequestId'
+        - $ref: '#/components/parameters/ExpectedVersion'
+      responses:
+        '200':
+          description: Pending request rejected without a review text field.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DealRequest'}
+        '403': {$ref: '#/components/responses/ApiError'}
+        '404': {$ref: '#/components/responses/ApiError'}
+        '409': {$ref: '#/components/responses/ApiError'}
+  /api/v1/admin/members:
+    get: {tags: [EmployeeBusiness], operationId: listAdminMembers, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+    post: {tags: [EmployeeBusiness], operationId: createAdminMember, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}, '409': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/members/{membershipId}:
+    patch: {tags: [EmployeeBusiness], operationId: updateAdminMember, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}, '409': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/members/{membershipId}/delete:
+    post: {tags: [EmployeeBusiness], operationId: deleteAdminMember, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'204': {description: Member removed after required customer and reminder transfer.}, '403': {$ref: '#/components/responses/ApiError'}, '409': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/teams:
+    get: {tags: [EmployeeBusiness], operationId: listAdminTeams, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+    post: {tags: [EmployeeBusiness], operationId: createAdminTeam, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/teams/{teamId}/leader:
+    put: {tags: [EmployeeBusiness], operationId: assignAdminTeamLeader, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}, '409': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/teams/{teamId}:
+    delete: {tags: [EmployeeBusiness], operationId: deleteAdminTeam, responses: {'204': {description: Team relationship removed; members, customers and history retained.}, '403': {$ref: '#/components/responses/ApiError'}, '409': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/registration-codes:
+    get: {tags: [EmployeeBusiness], operationId: listAdminRegistrationCodes, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+    post: {tags: [EmployeeBusiness], operationId: createAdminRegistrationCode, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/admin/registration-codes/{codeId}/disable:
+    post: {tags: [EmployeeBusiness], operationId: disableAdminRegistrationCode, responses: {'204': {description: Registration code disabled.}, '403': {$ref: '#/components/responses/ApiError'}, '404': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/leadership-dashboard:
+    get: {tags: [EmployeeBusiness], operationId: getLeadershipDashboard, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '403': {$ref: '#/components/responses/ApiError'}}}
+  /api/v1/dashboard:
+    get: {tags: [EmployeeBusiness], operationId: employeeDashboard, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/team-data/overview:
+    get: {tags: [EmployeeBusiness], operationId: getTeamDataOverview, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers:
+    get: {tags: [Customer], operationId: listCustomers, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [Customer], operationId: createCustomer, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers/{customerId}/collaboration:
+    get: {tags: [Customer], operationId: getCustomerCollaboration, parameters: [{$ref: '#/components/parameters/CustomerId'}], responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers/{customerId}/collaborators:
+    put: {tags: [Customer], operationId: replaceCustomerCollaborators, parameters: [{$ref: '#/components/parameters/CustomerId'}], requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers/{customerId}/transfer:
+    post: {tags: [Customer], operationId: transferCustomer, parameters: [{$ref: '#/components/parameters/CustomerId'}], requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers/{customerId}/archive:
+    post: {tags: [Customer], operationId: archiveCustomer, parameters: [{$ref: '#/components/parameters/CustomerId'}], responses: {'204': {description: Customer archived}}}
+  /api/v1/customers/{customerId}/classifications:
+    get: {tags: [Customer], operationId: listCustomerClassifications, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [Customer], operationId: createCustomerClassification, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customers/{customerId}/deadline-shadow:
+    get: {tags: [Customer], operationId: getCustomerDeadlineShadow, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/exports/customers/{customerId}/timeline:
+    get: {tags: [Customer], operationId: exportCustomerTimeline, responses: {'200': {description: Permission-trimmed customer timeline XLSX}}}
+  /api/v1/imports/customers/preview:
+    post: {tags: [Customer], operationId: previewCustomerImport, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/imports/{jobId}/commit:
+    post: {tags: [Customer], operationId: commitCustomerImport, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/exports/customers:
+    get: {tags: [Customer], operationId: exportCustomers, responses: {'200': {description: Permission-trimmed customer export}}}
+  /api/v1/customers/{customerId}/interactions:
+    get: {tags: [EmployeeBusiness], operationId: listCustomerInteractions, parameters: [{$ref: '#/components/parameters/CustomerId'}], responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [EmployeeBusiness], operationId: createCustomerInteraction, parameters: [{$ref: '#/components/parameters/CustomerId'}], requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/reminders:
+    get: {tags: [EmployeeBusiness], operationId: listReminders, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/reminders/{reminderId}:
+    patch: {tags: [EmployeeBusiness], operationId: updateReminder, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/daily-reports/today:
+    get: {tags: [EmployeeBusiness], operationId: getTodayDailyReport, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/daily-reports/{date}:
+    put: {tags: [EmployeeBusiness], operationId: saveDailyReport, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/notifications:
+    get: {tags: [EmployeeBusiness], operationId: listNotifications, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tasks:
+    get: {tags: [EmployeeBusiness], operationId: listTasks, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [AdminBusiness], operationId: createTask, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tasks/{taskId}/claim:
+    post: {tags: [EmployeeBusiness], operationId: claimTask, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tasks/{taskId}/my-assignment:
+    patch: {tags: [EmployeeBusiness], operationId: updateTaskAssignment, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/today:
+    get: {tags: [EmployeeBusiness], operationId: getTodayPerformance, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/claims:
+    get: {tags: [Performance], operationId: listPerformanceClaims, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [EmployeeBusiness], operationId: createPerformanceClaim, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/claims/{claimId}/evidence:
+    post: {tags: [EmployeeBusiness], operationId: uploadPerformanceEvidence, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/claims/{claimId}/submit:
+    post: {tags: [EmployeeBusiness], operationId: submitPerformanceClaim, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations:
+    get: {tags: [EmployeeBusiness], operationId: listConsultations, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [EmployeeBusiness], operationId: createConsultation, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/{consultationId}:
+    get: {tags: [EmployeeBusiness], operationId: getConsultation, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/candidates:
+    get: {tags: [EmployeeBusiness], operationId: listConsultationCandidates, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/{consultationId}/accept:
+    post: {tags: [EmployeeBusiness], operationId: acceptConsultation, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/{consultationId}/reject:
+    post: {tags: [EmployeeBusiness], operationId: rejectConsultation, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/{consultationId}/end:
+    post: {tags: [EmployeeBusiness], operationId: endConsultation, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultations/{consultationId}/complete:
+    post: {tags: [EmployeeBusiness], operationId: completeConsultation, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/consultation-failure-reasons:
+    get: {tags: [EmployeeBusiness], operationId: listConsultationFailureReasons, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/content-tasks/overview:
+    get: {tags: [EmployeeBusiness], operationId: getContentTaskOverview, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/content-posts:
+    post: {tags: [EmployeeBusiness], operationId: createContentPost, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/content-posts/{postId}/metrics:
+    patch: {tags: [EmployeeBusiness], operationId: updateContentMetrics, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/circle/posts:
+    get: {tags: [EmployeeBusiness], operationId: listCirclePosts, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/announcements:
+    get: {tags: [EmployeeBusiness], operationId: listAnnouncements, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [AdminBusiness], operationId: createAnnouncement, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/assistant/availability:
+    get: {tags: [EmployeeBusiness], operationId: getAssistantAvailability, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/assistant/customers/{customerId}/summary:
+    get: {tags: [EmployeeBusiness], operationId: streamCustomerSummary, parameters: [{$ref: '#/components/parameters/CustomerId'}], responses: {'200': {description: SSE customer summary stream}}}
+  /api/v1/releases:
+    get: {tags: [EmployeeBusiness], operationId: listProductReleases, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/releases/current/unacknowledged:
+    get: {tags: [EmployeeBusiness], operationId: getUnacknowledgedRelease, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}, '204': {description: No unacknowledged release}}}
+  /api/v1/releases/{releaseId}/acknowledge:
+    post: {tags: [EmployeeBusiness], operationId: acknowledgeRelease, parameters: [{$ref: '#/components/parameters/ReleaseId'}], responses: {'204': {description: Acknowledged}}}
+  /api/v1/agent/authorizations:
+    get: {tags: [EmployeeBusiness], operationId: listAgentAuthorizations, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/agent/authorizations/{authorizationId}:
+    delete: {tags: [EmployeeBusiness], operationId: revokeAgentAuthorization, responses: {'204': {description: Revoked}}}
+  /api/v1/customer-pools:
+    get: {tags: [EmployeeBusiness], operationId: listCustomerPools, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/customer-pools/{entryId}/claims:
+    post: {tags: [EmployeeBusiness], operationId: claimCustomerPoolEntry, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/second-line-recruitments:
+    get: {tags: [EmployeeBusiness], operationId: listSecondLineRecruitments, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/second-line-recruitments/{recruitmentId}/claim:
+    post: {tags: [EmployeeBusiness], operationId: claimSecondLineRecruitment, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/notifications/{notificationId}/read:
+    post: {tags: [EmployeeBusiness], operationId: markNotificationRead, responses: {'204': {description: Notification marked read}}}
+  /api/v1/notifications/read-all:
+    post: {tags: [EmployeeBusiness], operationId: markAllNotificationsRead, responses: {'204': {description: Notifications marked read}}}
+  /api/v1/circle/senders:
+    get: {tags: [EmployeeBusiness], operationId: listCircleSenders, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/assistant/customer-draft:
+    post: {tags: [Assistant], operationId: createCustomerDraft, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/assistant/interaction-draft:
+    post: {tags: [Assistant], operationId: createInteractionDraft, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/assistant/customers/{customerId}/next-actions:
+    get: {tags: [Assistant], operationId: streamNextActions, responses: {'200': {description: SSE next actions stream}}}
+  /api/v1/assistant/customers/{customerId}/data-quality:
+    get: {tags: [Assistant], operationId: streamDataQuality, responses: {'200': {description: SSE data quality stream}}}
+  /api/v1/assistant/daily-briefing:
+    get: {tags: [Assistant], operationId: streamDailyBriefing, responses: {'200': {description: SSE daily briefing stream}}}
+  /api/v1/customers/{customerId}/classifications/current:
+    get: {tags: [MarketGovernance], operationId: getCurrentClassification, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/market/classification-reviews:
+    get: {tags: [MarketGovernance], operationId: listClassificationReviews, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/market/classification-anomalies:
+    get: {tags: [MarketGovernance], operationId: listClassificationAnomalies, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/market/classification-reviews/{classificationId}/select:
+    post: {tags: [MarketGovernance], operationId: selectClassificationReview, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/market/classification-reviews/{classificationId}/review:
+    post: {tags: [MarketGovernance], operationId: reviewClassification, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/cross-sales:
+    get: {tags: [MarketGovernance], operationId: listCrossSales, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/cross-sales/export.xlsx:
+    get: {tags: [MarketGovernance], operationId: exportCrossSales, responses: {'200': {description: Cross-sale XLSX export}}}
+  /api/v1/tasks/{taskId}/close:
+    post: {tags: [AdminBusiness], operationId: closeTask, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tasks/{taskId}:
+    delete: {tags: [AdminBusiness], operationId: deleteTask, responses: {'204': {description: Task deleted}}}
+  /api/v1/tasks/matrix:
+    get: {tags: [AdminBusiness], operationId: getTaskMatrix, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tasks/{taskId}/assignments/{assignmentId}:
+    patch: {tags: [AdminBusiness], operationId: reviewTaskAssignment, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/content-posts/{postId}/review:
+    patch: {tags: [AdminBusiness], operationId: reviewContentPost, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/announcements/{announcementId}:
+    patch: {tags: [AdminBusiness], operationId: updateAnnouncement, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/announcements/{announcementId}/archive:
+    post: {tags: [AdminBusiness], operationId: archiveAnnouncement, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/daily-reports/calendar:
+    get: {tags: [AdminBusiness], operationId: getDailyReportCalendar, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/claims/{claimId}/review:
+    post: {tags: [Performance], operationId: reviewPerformanceClaim, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/history:
+    get: {tags: [Performance], operationId: getPerformanceHistory, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/leaderboard:
+    get: {tags: [Performance], operationId: getPerformanceLeaderboard, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/activities:
+    get: {tags: [Performance], operationId: listPerformanceActivities, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [Performance], operationId: createPerformanceActivity, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/activities/{activityId}/evidence:
+    post: {tags: [Performance], operationId: uploadPerformanceActivityEvidence, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/activities/{activityId}/complete:
+    post: {tags: [Performance], operationId: completePerformanceActivity, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/activities/{activityId}/allocate:
+    post: {tags: [Performance], operationId: allocatePerformanceActivity, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/activities/{activityId}/review:
+    post: {tags: [Performance], operationId: reviewPerformanceActivity, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/rules:
+    get: {tags: [PerformanceAdmin], operationId: listPerformanceRules, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [PerformanceAdmin], operationId: createPerformanceRule, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/participants:
+    get: {tags: [PerformanceAdmin], operationId: listPerformanceParticipants, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [PerformanceAdmin], operationId: addPerformanceParticipant, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/participants/{participantId}:
+    patch: {tags: [PerformanceAdmin], operationId: updatePerformanceParticipant, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/days/{date}:
+    get: {tags: [PerformanceAdmin], operationId: getPerformanceDay, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/days/{date}/settle:
+    post: {tags: [PerformanceAdmin], operationId: settlePerformanceDay, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/days/{date}/reopen:
+    post: {tags: [PerformanceAdmin], operationId: reopenPerformanceDay, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/performance/admin/export:
+    get: {tags: [PerformanceAdmin], operationId: exportPerformance, responses: {'200': {description: Performance XLSX export}}}
+  /api/v1/performance/admin/manual-entries:
+    post: {tags: [PerformanceAdmin], operationId: createPerformanceManualEntry, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/tags:
+    get: {tags: [Dictionaries], operationId: listTags, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [Dictionaries], operationId: createTag, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/dictionaries:
+    get: {tags: [Dictionaries], operationId: listDictionaries, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [Dictionaries], operationId: createDictionaryValue, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/assistant-settings:
+    get: {tags: [AdminConfiguration], operationId: getAssistantSettings, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    put: {tags: [AdminConfiguration], operationId: updateAssistantSettings, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-intelligence/settings:
+    get: {tags: [AdminConfiguration], operationId: getCustomerIntelligenceSettings, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-intelligence/runtime:
+    get: {tags: [AdminConfiguration], operationId: getCustomerIntelligenceRuntime, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-intelligence/backfill/resume:
+    post: {tags: [AdminConfiguration], operationId: resumeCustomerIntelligenceBackfill, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-intelligence/backfill/pause:
+    post: {tags: [AdminConfiguration], operationId: pauseCustomerIntelligenceBackfill, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-enrichment-jobs:
+    get: {tags: [AdminConfiguration], operationId: listCustomerEnrichmentJobs, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-enrichment-jobs/preview:
+    post: {tags: [AdminConfiguration], operationId: previewCustomerEnrichmentJob, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-enrichment-jobs/{jobId}/commit:
+    post: {tags: [AdminConfiguration], operationId: commitCustomerEnrichmentJob, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/customer-enrichment-jobs/{jobId}/report.csv:
+    get: {tags: [AdminConfiguration], operationId: downloadCustomerEnrichmentReport, responses: {'200': {description: Enrichment CSV report}}}
+  /api/v1/admin/agent/authorizations:
+    get: {tags: [AdminConfiguration], operationId: listAdminAgentAuthorizations, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/agent/authorizations/{authorizationId}:
+    delete: {tags: [AdminConfiguration], operationId: revokeAdminAgentAuthorization, responses: {'204': {description: Authorization revoked}}}
+  /api/v1/admin/audit:
+    get: {tags: [AdminConfiguration], operationId: listAuditEvents, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/audit/export:
+    get: {tags: [AdminConfiguration], operationId: exportAuditEvents, responses: {'200': {description: Audit export}}}
+  /api/v1/admin/wecom-webhooks:
+    get: {tags: [AdminConfiguration], operationId: listWecomWebhooks, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    post: {tags: [AdminConfiguration], operationId: createWecomWebhook, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/wecom-webhooks/{webhookId}:
+    delete: {tags: [AdminConfiguration], operationId: deleteWecomWebhook, responses: {'204': {description: Webhook deleted}}}
+  /api/v1/admin/wecom-webhooks/deliveries:
+    get: {tags: [AdminConfiguration], operationId: listWecomWebhookDeliveries, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/wecom-webhooks/deliveries/{deliveryId}/retry:
+    post: {tags: [AdminConfiguration], operationId: retryWecomWebhookDelivery, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/leadership-screen-settings:
+    get: {tags: [AdminConfiguration], operationId: getLeadershipScreenSettings, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    put: {tags: [AdminConfiguration], operationId: updateLeadershipScreenSettings, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/follow-up-policy:
+    get: {tags: [AdminConfiguration], operationId: getFollowUpPolicy, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    put: {tags: [AdminConfiguration], operationId: updateFollowUpPolicy, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/consultation-settings:
+    get: {tags: [AdminConfiguration], operationId: getConsultationSettings, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+    put: {tags: [AdminConfiguration], operationId: updateConsultationSettings, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/consultation-reasons:
+    post: {tags: [AdminConfiguration], operationId: createConsultationReason, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'201': {$ref: '#/components/responses/BusinessPayload'}}}
+  /api/v1/admin/consultation-reasons/{reasonId}:
+    put: {tags: [AdminConfiguration], operationId: updateConsultationReason, requestBody: {$ref: '#/components/requestBodies/BusinessPayload'}, responses: {'200': {$ref: '#/components/responses/BusinessPayload'}}}
+components:
+  securitySchemes:
+    mobileBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: Short-lived device-bound mobile access token; never a Web session or MCP token.
+  parameters:
+    AppVersion:
+      name: X-Yingge-App-Version
+      in: header
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 64}
+    VersionCode:
+      name: X-Yingge-Version-Code
+      in: header
+      required: true
+      schema: {type: integer, format: int64, minimum: 1}
+    Platform:
+      name: X-Yingge-Platform
+      in: header
+      required: true
+      schema: {$ref: '#/components/schemas/MobilePlatform'}
+    DeviceInstanceId:
+      name: X-Yingge-Device-Id
+      in: header
+      required: true
+      schema: {type: string, format: uuid}
+    DeviceId:
+      name: deviceId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    DealRequestId:
+      name: requestId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    ReleaseId:
+      name: releaseId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 16, maxLength: 160}
+    ExpectedVersion:
+      name: If-Match-Version
+      in: header
+      required: true
+      schema: {type: integer, format: int64, minimum: 0}
+  responses:
+    ApiError:
+      description: Structured API error. Cross-organization resources are not disclosed.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ApiError'}
+    BusinessPayload:
+      description: Strongly typed employee business response; concrete DTO is frozen in the generated client model.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/BusinessPayload'}
+  requestBodies:
+    BusinessPayload:
+      required: true
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/BusinessPayload'}
+  schemas:
+    BusinessPayload:
+      type: object
+      description: Compatibility envelope for pre-existing employee APIs; clients define named DTOs and never use a generic proxy.
+      additionalProperties: true
+    MobilePlatform:
+      type: string
+      enum: [ANDROID, IOS]
+    MobileLoginRequest:
+      type: object
+      additionalProperties: false
+      required: [username, password, deviceName]
+      properties:
+        username: {type: string, minLength: 1, maxLength: 160}
+        password: {type: string, minLength: 1, maxLength: 200, writeOnly: true}
+        deviceName: {type: string, minLength: 1, maxLength: 160}
+    RegistrationOptionsRequest:
+      type: object
+      additionalProperties: false
+      required: [registrationCode]
+      properties:
+        registrationCode: {type: string, minLength: 1, maxLength: 100}
+    RegistrationTeam:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+    RegistrationOptions:
+      type: object
+      additionalProperties: false
+      required: [teams]
+      properties:
+        teams:
+          type: array
+          items: {$ref: '#/components/schemas/RegistrationTeam'}
+    MobileRegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [username, realName, password, registrationCode, teamId]
+      properties:
+        username: {type: string, minLength: 1, maxLength: 100}
+        realName: {type: string, minLength: 1, maxLength: 120}
+        password: {type: string, minLength: 1, maxLength: 200, writeOnly: true}
+        registrationCode: {type: string, minLength: 1, maxLength: 100}
+        teamId: {type: string, format: uuid}
+    RegistrationResult:
+      type: object
+      additionalProperties: false
+      required: [userId, membershipId, username, realName, role, teamId, teamName]
+      properties:
+        userId: {type: string, format: uuid}
+        membershipId: {type: string, format: uuid}
+        username: {type: string}
+        realName: {type: string}
+        role: {type: string, enum: [MEMBER]}
+        teamId: {type: string, format: uuid}
+        teamName: {type: string}
+    PasswordChangeRequest:
+      type: object
+      additionalProperties: false
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword: {type: string, minLength: 1, maxLength: 200, writeOnly: true}
+        newPassword: {type: string, minLength: 1, maxLength: 200, writeOnly: true}
+    MobileRefreshRequest:
+      type: object
+      additionalProperties: false
+      required: [refreshToken]
+      properties:
+        refreshToken: {type: string, minLength: 32, maxLength: 512, writeOnly: true}
+    MobileTokenResponse:
+      type: object
+      required: [accessToken, accessExpiresAt, refreshToken, refreshExpiresAt, actor]
+      properties:
+        accessToken: {type: string, writeOnly: true}
+        accessExpiresAt: {type: string, format: date-time}
+        refreshToken: {type: string, writeOnly: true}
+        refreshExpiresAt: {type: string, format: date-time}
+        actor: {$ref: '#/components/schemas/Actor'}
+    Actor:
+      type: object
+      required: [userId, membershipId, organizationId, username, displayName, roles, passwordChangeRequired]
+      properties:
+        userId: {type: string, format: uuid}
+        membershipId: {type: string, format: uuid}
+        organizationId: {type: string, format: uuid}
+        username: {type: string}
+        displayName: {type: string}
+        roles:
+          type: array
+          uniqueItems: true
+          items: {type: string, enum: [ORG_ADMIN, TEAM_MANAGER, MEMBER, VIEWER]}
+        passwordChangeRequired: {type: boolean}
+    MobileDevice:
+      type: object
+      required: [id, platform, deviceName, appVersion, current, createdAt, lastUsedAt]
+      properties:
+        id: {type: string, format: uuid}
+        platform: {$ref: '#/components/schemas/MobilePlatform'}
+        deviceName: {type: string}
+        appVersion: {type: string}
+        current: {type: boolean}
+        createdAt: {type: string, format: date-time}
+        lastUsedAt: {type: string, format: date-time}
+        revokedAt: {type: [string, 'null'], format: date-time}
+    MobileBootstrap:
+      type: object
+      required: [actor, serverTime, organizationTimeZone, availableModes, capabilities, unread]
+      properties:
+        actor: {$ref: '#/components/schemas/Actor'}
+        serverTime: {type: string, format: date-time}
+        organizationTimeZone: {type: string, example: Asia/Shanghai}
+        availableModes:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items: {type: string, enum: [EMPLOYEE, ADMIN]}
+        capabilities:
+          type: array
+          uniqueItems: true
+          items: {type: string}
+        unread:
+          type: object
+          additionalProperties: false
+          required: [urgentReminders, notifications]
+          properties:
+            urgentReminders: {type: integer, minimum: 0}
+            notifications: {type: integer, minimum: 0}
+    AdminOverview:
+      type: object
+      additionalProperties: false
+      required: [pendingDealRequests, pendingClassificationReviews, dueOwnershipDeadlines, openPoolEntries, pendingSecondLineRecruitments, pendingPerformanceClaims, pendingPerformanceActivities, overdueConsultationFeedback, failedIntelligenceJobs, generatedAt]
+      properties:
+        pendingDealRequests: {type: integer, format: int64, minimum: 0}
+        pendingClassificationReviews: {type: integer, format: int64, minimum: 0}
+        dueOwnershipDeadlines: {type: integer, format: int64, minimum: 0}
+        openPoolEntries: {type: integer, format: int64, minimum: 0}
+        pendingSecondLineRecruitments: {type: integer, format: int64, minimum: 0}
+        pendingPerformanceClaims: {type: integer, format: int64, minimum: 0}
+        pendingPerformanceActivities: {type: integer, format: int64, minimum: 0}
+        overdueConsultationFeedback: {type: integer, format: int64, minimum: 0}
+        failedIntelligenceJobs: {type: integer, format: int64, minimum: 0}
+        generatedAt: {type: string, format: date-time}
+    DashboardGreeting:
+      type: object
+      additionalProperties: false
+      required: [salutation, subtitle, generatedByAi, validUntil, traceId]
+      properties:
+        salutation: {type: string}
+        subtitle: {type: string}
+        generatedByAi: {type: boolean}
+        validUntil: {type: string, format: date-time}
+        traceId: {type: string}
+    MobileCustomerInsight:
+      type: object
+      additionalProperties: false
+      required: [content, generatedAt, timelineUpdatedAt, traceId]
+      properties:
+        content: {type: string}
+        generatedAt: {type: string, format: date-time}
+        timelineUpdatedAt: {type: string, format: date-time}
+        traceId: {type: string}
+    PushRegistrationRequest:
+      type: object
+      additionalProperties: false
+      required: [provider, registrationId]
+      properties:
+        provider: {type: string, enum: [UNIPUSH]}
+        registrationId: {type: string, minLength: 16, maxLength: 2048, writeOnly: true}
+        vendor: {type: string, maxLength: 80}
+    NotificationPreferences:
+      type: object
+      additionalProperties: false
+      required: [urgentReminders, tasks, consultations, announcements, releases]
+      properties:
+        urgentReminders: {type: boolean}
+        tasks: {type: boolean}
+        consultations: {type: boolean}
+        announcements: {type: boolean}
+        releases: {type: boolean}
+    WebSessionTicketRequest:
+      type: object
+      additionalProperties: false
+      required: [target]
+      properties:
+        target: {type: string, enum: [QQ_WORKBENCH, OAUTH_APPROVAL, AGENT_APPROVAL]}
+    WebSessionTicketResponse:
+      type: object
+      required: [ticket, exchangeUrl, expiresAt]
+      properties:
+        ticket: {type: string, writeOnly: true}
+        exchangeUrl: {type: string, pattern: '^/api/v1/mobile/web-sessions/exchange$'}
+        expiresAt: {type: string, format: date-time}
+    MobileAppRelease:
+      type: object
+      required: [id, platform, versionCode, versionName, minimumSupportedVersionCode, mandatory, notes]
+      properties:
+        id: {type: string, format: uuid}
+        platform: {$ref: '#/components/schemas/MobilePlatform'}
+        versionCode: {type: integer, format: int64, minimum: 1}
+        versionName: {type: string}
+        minimumSupportedVersionCode: {type: integer, format: int64, minimum: 1}
+        mandatory: {type: boolean}
+        notes: {type: string}
+        apkSize: {type: [integer, 'null'], format: int64, minimum: 0}
+        apkSha256: {type: [string, 'null'], pattern: '^[a-f0-9]{64}$'}
+        manifestSignature: {type: [string, 'null']}
+    DealState:
+      type: string
+      enum: [NONE, PENDING, WON]
+    DealRequestStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+    DealRequest:
+      type: object
+      required: [id, customerId, applicantMembershipId, status, requestedAt, version]
+      properties:
+        id: {type: string, format: uuid}
+        customerId: {type: string, format: uuid}
+        customerName: {type: string}
+        teamName: {type: [string, 'null']}
+        ownerDisplayName: {type: [string, 'null']}
+        applicantMembershipId: {type: string, format: uuid}
+        applicantDisplayName: {type: [string, 'null']}
+        status: {$ref: '#/components/schemas/DealRequestStatus'}
+        requestedAt: {type: string, format: date-time}
+        reviewedAt: {type: [string, 'null'], format: date-time}
+        reviewerMembershipId: {type: [string, 'null'], format: uuid}
+        version: {type: integer, format: int64, minimum: 0}
+    DealRequestPage:
+      type: object
+      required: [content, page, size, totalElements, totalPages]
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/DealRequest'}
+        page: {type: integer, minimum: 0}
+        size: {type: integer, minimum: 1}
+        totalElements: {type: integer, format: int64, minimum: 0}
+        totalPages: {type: integer, minimum: 0}
+    Customer:
+      type: object
+      required: [id, fullName, dealState, canRequestDeal, createdAt, updatedAt, version]
+      properties:
+        id: {type: string, format: uuid}
+        fullName: {type: string}
+        nickname: {type: [string, 'null']}
+        school: {type: [string, 'null']}
+        major: {type: [string, 'null']}
+        grade: {type: [string, 'null']}
+        currentStatus: {type: [string, 'null']}
+        dealState: {$ref: '#/components/schemas/DealState'}
+        canRequestDeal: {type: boolean}
+        dealRequestedAt: {type: [string, 'null'], format: date-time}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
+    FieldError:
+      type: object
+      required: [field, message]
+      properties:
+        field: {type: string}
+        message: {type: string}
+    ApiError:
+      type: object
+      required: [code, message, fieldErrors, traceId]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        fieldErrors:
+          type: array
+          items: {$ref: '#/components/schemas/FieldError'}
+        traceId: {type: string}

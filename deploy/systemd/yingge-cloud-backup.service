@@ -1,0 +1,15 @@
+[Unit]
+Description=Yingge Cloud PostgreSQL backup
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/yingge-cloud/app
+ExecStart=/usr/bin/docker compose --profile tools run --rm backup
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+[Install]
+WantedBy=multi-user.target

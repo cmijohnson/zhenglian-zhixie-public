@@ -1,0 +1,40 @@
+INSERT INTO mobile_app_releases(
+    id,
+    platform,
+    version_name,
+    version_code,
+    minimum_supported_version_code,
+    mandatory,
+    notes,
+    apk_path,
+    apk_size,
+    apk_sha256,
+    manifest_signature,
+    published,
+    released_at
+) VALUES (
+    '108ab270-e2ac-4413-9f09-09f8a0700d2a',
+    'ANDROID',
+    '0.1.2',
+    3,
+    1,
+    false,
+    '修复 Release APK 混淆后移动 API JSON 字段名异常、登录请求被服务器拒绝的问题。',
+    'android/yingge-cloud-0.1.2.apk',
+    3679166,
+    'b99374a68936793dd7e17391f355c4f46a1139b56f05340aa14c93321185d748',
+    null,
+    true,
+    '2026-08-23 04:03:00+08'
+)
+ON CONFLICT (platform, version_code) DO UPDATE SET
+    version_name = excluded.version_name,
+    minimum_supported_version_code = excluded.minimum_supported_version_code,
+    mandatory = excluded.mandatory,
+    notes = excluded.notes,
+    apk_path = excluded.apk_path,
+    apk_size = excluded.apk_size,
+    apk_sha256 = excluded.apk_sha256,
+    manifest_signature = excluded.manifest_signature,
+    published = excluded.published,
+    released_at = excluded.released_at;

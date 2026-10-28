@@ -1,0 +1,40 @@
+INSERT INTO mobile_app_releases(
+    id,
+    platform,
+    version_name,
+    version_code,
+    minimum_supported_version_code,
+    mandatory,
+    notes,
+    apk_path,
+    apk_size,
+    apk_sha256,
+    manifest_signature,
+    published,
+    released_at
+) VALUES (
+    '9f4ad7d2-06b5-4f5e-a882-a2484c974f01',
+    'ANDROID',
+    '0.1.0',
+    1,
+    1,
+    false,
+    '英格云 Android 企业内测首版：原生客户、提醒、每日小结、业务协作、QQ 工作台及极简成单申请。',
+    'android/yingge-cloud-0.1.0.apk',
+    2762581,
+    '4e56a13f71122a617d0ede0ee4c71247c7315bf825aa697a2bfeb285111c6433',
+    null,
+    true,
+    '2026-08-23 02:10:00+08'
+)
+ON CONFLICT (platform, version_code) DO UPDATE SET
+    version_name = excluded.version_name,
+    minimum_supported_version_code = excluded.minimum_supported_version_code,
+    mandatory = excluded.mandatory,
+    notes = excluded.notes,
+    apk_path = excluded.apk_path,
+    apk_size = excluded.apk_size,
+    apk_sha256 = excluded.apk_sha256,
+    manifest_signature = excluded.manifest_signature,
+    published = excluded.published,
+    released_at = excluded.released_at;

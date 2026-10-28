@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Yingge Cloud backup every day
+
+[Timer]
+OnCalendar=*-*-* 02:20:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=10m
+Unit=yingge-cloud-backup.service
+
+[Install]
+WantedBy=timers.target

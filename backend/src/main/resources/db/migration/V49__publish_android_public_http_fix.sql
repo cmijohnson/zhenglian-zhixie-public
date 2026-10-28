@@ -1,0 +1,40 @@
+INSERT INTO mobile_app_releases(
+    id,
+    platform,
+    version_name,
+    version_code,
+    minimum_supported_version_code,
+    mandatory,
+    notes,
+    apk_path,
+    apk_size,
+    apk_sha256,
+    manifest_signature,
+    published,
+    released_at
+) VALUES (
+    'b688af53-2384-4c72-b21f-a78d7c39e511',
+    'ANDROID',
+    '0.1.1',
+    2,
+    1,
+    false,
+    '修复公网 FRP HTTP 地址被 Android 网络安全策略拦截的问题；用户确认明文风险后可连接任意精确 HTTP Origin。',
+    'android/yingge-cloud-0.1.1.apk',
+    2762491,
+    'b2cc0f5412ae85e2be7a547e4828513a31f93aa1acc9f4d6efd563e69923876d',
+    null,
+    true,
+    '2026-08-23 03:25:00+08'
+)
+ON CONFLICT (platform, version_code) DO UPDATE SET
+    version_name = excluded.version_name,
+    minimum_supported_version_code = excluded.minimum_supported_version_code,
+    mandatory = excluded.mandatory,
+    notes = excluded.notes,
+    apk_path = excluded.apk_path,
+    apk_size = excluded.apk_size,
+    apk_sha256 = excluded.apk_sha256,
+    manifest_signature = excluded.manifest_signature,
+    published = excluded.published,
+    released_at = excluded.released_at;

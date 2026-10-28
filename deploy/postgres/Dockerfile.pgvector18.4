@@ -1,0 +1,25 @@
+FROM postgres:18.4-alpine
+
+ARG PGVECTOR_REVISION=8ee86c96f0fd72390f890aa8a336fda6d3ab4c6c
+
+RUN set -eux; \
+    apk add --no-cache --virtual .pgvector-build \
+        build-base \
+        ca-certificates \
+        clang21 \
+        git \
+        llvm21-dev; \
+    git clone --filter=blob:none https://github.com/pgvector/pgvector.git /tmp/pgvector; \
+    git -C /tmp/pgvector checkout --detach "${PGVECTOR_REVISION}"; \
+    test "$(git -C /tmp/pgvector rev-parse HEAD)" = "${PGVECTOR_REVISION}"; \
+    make -C /tmp/pgvector clean; \
+    make -C /tmp/pgvector OPTFLAGS=""; \
+    make -C /tmp/pgvector install; \
+    install -d /usr/local/share/doc/pgvector; \
+    cp /tmp/pgvector/LICENSE /tmp/pgvector/README.md /usr/local/share/doc/pgvector/; \
+    rm -rf /tmp/pgvector; \
+    apk del .pgvector-build
+
+LABEL org.opencontainers.image.source="https://github.com/pgvector/pgvector" \
+      org.opencontainers.image.revision="8ee86c96f0fd72390f890aa8a336fda6d3ab4c6c" \
+      org.opencontainers.image.version="postgres-18.4-pgvector-0.8.6"
