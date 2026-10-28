@@ -9,6 +9,8 @@
 | JulyOS | [@Julyos](https://github.com/Julyos) | 贡献者 |
 | JinweiOS | [@JinweiOS](https://github.com/JinweiOS) | 贡献者 |
 
+> 名单更新：2026-10-28
+
 ## 如何加入
 
 1. 通过 Issue 说明希望参与的方向；
