@@ -21,7 +21,7 @@
         <commons-csv.version>1.14.1</commons-csv.version>
         <poi.version>5.4.1</poi.version>
         <sqlite.version>3.50.3.0</sqlite.version>
-        <bouncycastle.version>1.81</bouncycastle.version>
+        <bouncycastle.version>1.86</bouncycastle.version>
         <mcp.version>1.1.2</mcp.version>
         <langchain4j.version>1.18.0</langchain4j.version>
         <lark-oapi.version>2.7.3</lark-oapi.version>
